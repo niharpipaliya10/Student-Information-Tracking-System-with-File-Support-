@@ -17,16 +17,19 @@ typedef struct stu
     struct date doj;
     struct stu *next;
 } sll;
-void add_student_data(sll **);
-void print_node(sll *);
-void save_file(sll *);
-void search_name(sll *);
-void search_id(sll *);
-void search_assessment_status(sll *);
-void search_student_joindata(sll *);
-void search_student_birthdate(sll *);
-void read_file(sll **);
-void edit_file(sll **);
+int a = 0;
+void add_student_info(sll **);          // add  student data
+void print_all_data(sll *);             // print all data
+void save_data_file(sll *);             // save data in file
+void read_data_file(sll **);            // read data from file
+void edit_data_file(sll **);            // edit student data in file
+void delete_data_one(sll **);           // delete one student data
+void search_student_id(sll *);          // search student id
+void search_student_name(sll *);        // search student name
+void search_assessment_status(sll *);   // short data assessment status too
+void search_student_birthdate(sll *);   // search student dob
+void search_student_joindata(sll *);    // search student doj
+void search_student_marks_range(sll *); // search student marke in between
 
 void main()
 {
@@ -34,42 +37,49 @@ void main()
     sll *headptr = 0;
     while (1)
     {
-        printf("1)add student data\n2)show all data\n3)save data in file\n4)search name student\n5)search banch_id\n6)search earch_assessment_status\n7)search_student_joindata\n8)search_student_birthdate\n9)read_file\n10)edit data\n11)exit\n");
+        printf("1)Add student data\n2)Show all student data\n3)Save student data in file\n4)Read student data from file\n5)Update student data in file\n6)Delete student data in file\n7)Search student bantch\n8)Search_student_name\n9)Short student data base on assessment\n10)Search student base birth date\n11)Search student base join date\n12)Short student marks in range\n13)exit\n");
         printf("Enter a op no:\n");
         scanf("%d", &op);
         switch (op)
         {
         case 1:
-            add_student_data(&headptr);
+            add_student_info(&headptr);
             break;
         case 2:
-            print_node(headptr);
+            print_all_data(headptr);
             break;
         case 3:
-            save_file(headptr);
+            save_data_file(headptr);
             break;
         case 4:
-            search_name(headptr);
+            read_data_file(&headptr);
             break;
         case 5:
-            search_id(headptr);
+            edit_data_file(&headptr);
             break;
         case 6:
-            search_assessment_status(headptr);
+            delete_data_one(&headptr);
             break;
         case 7:
-            search_student_joindata(headptr);
+            search_student_id(headptr);
             break;
         case 8:
-            search_student_birthdate(headptr);
+            search_student_name(headptr);
             break;
         case 9:
-            read_file(&headptr);
+            search_assessment_status(headptr);
             break;
         case 10:
-            edit_file(&headptr);
+            search_student_birthdate(headptr);
             break;
         case 11:
+            search_student_joindata(headptr);
+            break;
+
+        case 12:
+            search_student_marks_range(headptr);
+            break;
+        case 13:
             exit(0);
             break;
 
@@ -79,24 +89,31 @@ void main()
         }
     }
 }
-/****************************************************************************************************** */
-/*add student data*/
-void add_student_data(sll **ptr)
+/**************************************************************************************************************************************************** */
+/*   add student data   */
+void add_student_info(sll **ptr)
 {
     sll *new, *last;
     new = malloc(sizeof(sll));
+
     printf("student bantch_id:\n");
     scanf(" %s", new->batch_id);
+
     printf("student name:\n");
     scanf(" %[^\n]", new->name);
+
     printf("student marks:\n");
     scanf("%f", &new->marks);
+
     printf("student assessment_status :\n");
     scanf("%s", new->assessment_status);
+
     printf("student birth date:\n");
     scanf("%d %d %d", &new->dob.day, &new->dob.month, &new->dob.year);
+
     printf("student join date:\n");
     scanf("%d %d %d", &new->doj.day, &new->doj.month, &new->doj.year);
+
     new->next = 0;
     if (*ptr == 0)
     {
@@ -111,11 +128,12 @@ void add_student_data(sll **ptr)
         }
         last->next = new;
     }
-    printf("Student added successfully!\n");
+    a = 1;
+    printf("\nStudent added successfully!\n\n");
 }
-/***************************************************************************************************** */
+/**************************************************************************************************************************************************** */
 /* load all data */
-void print_node(sll *ptr)
+void print_all_data(sll *ptr)
 {
 
     if (ptr == 0)
@@ -131,11 +149,12 @@ void print_node(sll *ptr)
                ptr->doj.day, ptr->doj.month, ptr->doj.year);
         ptr = ptr->next;
     }
-    printf("\n");
+    printf("\nData load successful\n\n");
 }
+
 /***************************************************************************************************** */
 /* save data in file*/
-void save_file(sll *ptr)
+void save_data_file(sll *ptr)
 {
     if (ptr == 0)
     {
@@ -154,196 +173,72 @@ void save_file(sll *ptr)
                 ptr->doj.day, ptr->doj.month, ptr->doj.year);
         ptr = ptr->next;
     }
-
+    a = 1;
     fclose(f);
-}
-/********************************************************************************************************** */
-/*search student name*/
-void search_name(sll *ptr)
-{
-    if (ptr == 0)
-    {
-        printf("no rcord found\n");
-        return;
-    }
-    int f = 0;
-    char name[50];
-    printf("Enter a name\n");
-    scanf(" %[^\n]", name);
-    while (ptr)
-    {
-        if (strcmp(ptr->name, name) == 0)
-        {
-            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
-                   ptr->assessment_status,
-                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
-            f = 1;
-        }
-        ptr = ptr->next;
-    }
-    if (f == 0)
-        printf("no record found\n");
+    printf("Data save successful\n\n");
 }
 /***************************************************************************************************** */
-/*search student id*/
-void search_id(sll *ptr)
-{
-    if (ptr == 0)
-    {
-        printf("no rcord found\n");
-        return;
-    }
-    int f = 0;
-    char id[50];
-    printf("Enter a id\n");
-    scanf(" %s", id);
-    while (ptr)
-    {
-        if (strcmp(ptr->batch_id, id) == 0)
-        {
-            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
-                   ptr->assessment_status,
-                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
-            f = 1;
-        }
-        ptr = ptr->next;
-    }
-    if (f == 0)
-        printf("no record found\n");
-}
-/************************************************************************************************************************ */
-/*search student assessment*/
-void search_assessment_status(sll *ptr)
-{
-    if (ptr == 0)
-    {
-        printf("no rcord found\n");
-        return;
-    }
-    int f = 0;
-    char assessment_status[50];
-    printf("Enter a assessment_status\n");
-    scanf(" %s", assessment_status);
-    while (ptr)
-    {
-        if (strcmp(ptr->assessment_status, assessment_status) == 0)
-        {
-            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
-                   ptr->assessment_status,
-                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
-            f = 1;
-        }
-        ptr = ptr->next;
-    }
-    if (f == 0)
-        printf("no record found\n");
-}
-/***************************************************************************************************************************** */
-/*student search_student_joindata*/
-void search_student_joindata(sll *ptr)
-{
-    if (ptr == 0)
-    {
-        printf("no rcord found\n");
-        return;
-    }
-    int f = 0;
-    int day, month, year;
-
-    printf("Enter a join date\n");
-    scanf("%d %d %d", &day, &month, &year);
-    while (ptr)
-    {
-        if (ptr->doj.day == day && ptr->doj.month == month && ptr->doj.year == year)
-        {
-            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
-                   ptr->assessment_status,
-                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
-            f = 1;
-        }
-        ptr = ptr->next;
-    }
-    if (f == 0)
-        printf("no record found\n");
-}
-/************************************************************************************************************************************************************************* */
-/*student search_student_birthdate*/
-void search_student_birthdate(sll *ptr)
-{
-    if (ptr == 0)
-    {
-        printf("no rcord found\n");
-        return;
-    }
-    int f = 0;
-    int day, month, year;
-
-    printf("Enter a join date\n");
-    scanf("%d %d %d", &day, &month, &year);
-    while (ptr)
-    {
-        if (ptr->dob.day == day && ptr->dob.month == month && ptr->dob.year == year)
-        {
-            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
-                   ptr->assessment_status,
-                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
-            f = 1;
-        }
-        ptr = ptr->next;
-    }
-    if (f == 0)
-        printf("no record found\n");
-}
-/***************************************************************************************************************************************************** */
 /*read data from file*/
-void read_file(sll **ptr)
+void read_data_file(sll **ptr)
 {
-    sll *new, *last;
-    FILE *f;
-    char filename[50];
-    printf("Enter a file:\n");
-    scanf("%s", filename);
-    f = fopen(filename, "r");
-    if (f == NULL)
+    if (*ptr == 0)
+        a = 1;
+    if (a == 1)
     {
-        printf("file not present\n");
-        return;
-    }
-    while (1)
-    {
-        new = malloc(sizeof(sll));
-        int n = fscanf(f, "%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", new->batch_id, new->name, &new->marks,
-                       new->assessment_status, &new->dob.day, &new->dob.month, &new->dob.year,
-                       &new->doj.day, &new->doj.month, &new->doj.year);
-        if (n == EOF)
-        {
-            free(new);
-            break;
-        }
-        if (n != 10)
-        {
-            free(new);
-            continue;
-        }
 
-        new->next = NULL;
-        if (*ptr == 0)
-            *ptr = new;
-        else
+        sll *new, *last;
+        FILE *f;
+        char filename[50];
+        printf("Enter a file:\n");
+        scanf("%s", filename);
+        f = fopen(filename, "r");
+        if (f == NULL)
         {
-            last = *ptr;
-            while (last->next)
-                last = last->next;
-            last->next = new;
+            printf("file not present\n");
+            return;
         }
+        while (1)
+        {
+            new = malloc(sizeof(sll));
+            int n = fscanf(f, "%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", new->batch_id, new->name, &new->marks,
+                           new->assessment_status, &new->dob.day, &new->dob.month, &new->dob.year,
+                           &new->doj.day, &new->doj.month, &new->doj.year);
+            if (n == EOF)
+            {
+                free(new);
+                break;
+            }
+            if (n != 10)
+            {
+                free(new);
+                continue;
+            }
+
+            new->next = NULL;
+            if (*ptr == 0)
+                *ptr = new;
+            else
+            {
+                last = *ptr;
+                while (last->next)
+                    last = last->next;
+                last->next = new;
+            }
+        }
+        fclose(f);
+        printf("read data successful\n\n");
+        a = 0;
     }
-    fclose(f);
-    printf("read data successful\n");
+    else
+    {
+        printf("data already read!\n\n");
+    }
 }
-/********************************************************************************************************************************************* */
+/***************************************************************************************************** */
 /*edit data*/
-void edit_file(sll **head)
+void edit_data_file(sll **head)
 {
+
     if (*head == NULL)
     {
         printf("No record found\n");
@@ -406,5 +301,204 @@ void edit_file(sll **head)
         temp = temp->next;
     }
     fclose(f);
-    printf("Record updated and saved successfully.\n");
+    a = 1;
+    printf("Record updated and saved successfully.\n\n ");
+}
+/********************************************************************************************************** */
+/*delete the node*/
+void delete_data_one(sll **ptr)
+{
+    if (*ptr == 0)
+    {
+        printf("No records found\n");
+        return;
+    }
+    char bantch_id[20];
+    printf("enter bantch_id to delete\n");
+    scanf("%s", bantch_id);
+
+    sll *del = *ptr, *prev;
+    while (del)
+    {
+        if (strcmp(del->batch_id, bantch_id) == 0)
+        {
+            if (del == *ptr)
+                *ptr = del->next;
+            else
+                prev->next = del->next;
+            free(del);
+            printf("data deleted\n");
+            return;
+        }
+        prev = del;
+        del = del->next;
+    }
+    printf("bantch_id not found\n");
+}
+/***************************************************************************************************** */
+/*search student id*/
+void search_student_id(sll *ptr)
+{
+    if (ptr == 0)
+    {
+        printf("no rcord found\n");
+        return;
+    }
+    int f = 0;
+    char id[50];
+    printf("Enter a id\n");
+    scanf(" %s", id);
+    while (ptr)
+    {
+        if (strcmp(ptr->batch_id, id) == 0)
+        {
+            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
+                   ptr->assessment_status,
+                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
+            f = 1;
+        }
+        ptr = ptr->next;
+    }
+    if (f == 0)
+        printf("no record found\n\n");
+}
+/********************************************************************************************************** */
+/*search student name*/
+void search_student_name(sll *ptr)
+{
+    if (ptr == 0)
+    {
+        printf("no rcord found\n");
+        return;
+    }
+    int f = 0;
+    char name[50];
+    printf("Enter a name\n");
+    scanf(" %[^\n]", name);
+    while (ptr)
+    {
+        if (strcmp(ptr->name, name) == 0)
+        {
+            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
+                   ptr->assessment_status,
+                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
+            f = 1;
+        }
+        ptr = ptr->next;
+    }
+    if (f == 0)
+        printf("no record found\n\n");
+}
+
+/************************************************************************************************************************ */
+/*search student assessment*/
+void search_assessment_status(sll *ptr)
+{
+    if (ptr == 0)
+    {
+        printf("no rcord found\n");
+        return;
+    }
+    int f = 0;
+    char assessment_status[50];
+    printf("Enter a assessment_status\n");
+    scanf(" %s", assessment_status);
+    while (ptr)
+    {
+        if (strcmp(ptr->assessment_status, assessment_status) == 0)
+        {
+            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
+                   ptr->assessment_status,
+                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
+            f = 1;
+        }
+        ptr = ptr->next;
+    }
+    if (f == 0)
+        printf("no record found\n\n");
+}
+/************************************************************************************************************************************************************************* */
+/*student search_student_birthdate*/
+void search_student_birthdate(sll *ptr)
+{
+    if (ptr == 0)
+    {
+        printf("no rcord found\n");
+        return;
+    }
+    int f = 0;
+    int day, month, year;
+
+    printf("Enter a join date\n");
+    scanf("%d %d %d", &day, &month, &year);
+    while (ptr)
+    {
+        if (ptr->dob.day == day && ptr->dob.month == month && ptr->dob.year == year)
+        {
+            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
+                   ptr->assessment_status,
+                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
+            f = 1;
+        }
+        ptr = ptr->next;
+    }
+    if (f == 0)
+        printf("no record found\n\n");
+}
+/***************************************************************************************************************************** */
+/*student search_student_joindata*/
+void search_student_joindata(sll *ptr)
+{
+    if (ptr == 0)
+    {
+        printf("no rcord found\n");
+        return;
+    }
+    int f = 0;
+    int day, month, year;
+
+    printf("Enter a join date\n");
+    scanf("%d %d %d", &day, &month, &year);
+    while (ptr)
+    {
+        if (ptr->doj.day == day && ptr->doj.month == month && ptr->doj.year == year)
+        {
+            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
+                   ptr->assessment_status,
+                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
+            f = 1;
+        }
+        ptr = ptr->next;
+    }
+    if (f == 0)
+        printf("no record found\n\n");
+}
+/********************************************************************************************************************** */
+void search_student_marks_range(sll *ptr)
+{
+    if (ptr == 0)
+    {
+        printf("no rcord found\n");
+        return;
+    }
+    int f = 0;
+    float marks1, marks2;
+
+    printf("Enter a start range marke\n");
+    scanf("%f", &marks1);
+    printf("Enter a end range marke\n");
+    scanf("%f", &marks2);
+    while (ptr)
+    {
+        if (ptr->marks >= marks1 && ptr->marks <= marks2)
+        {
+            printf("%s  %s  %f  %s  %d-%d-%d  %d-%d-%d\n", ptr->batch_id, ptr->name, ptr->marks,
+                   ptr->assessment_status,
+                   ptr->dob.day, ptr->dob.month, ptr->dob.year, ptr->doj.day, ptr->doj.month, ptr->doj.year);
+            f = 1;
+        }
+        ptr = ptr->next;
+    }
+    if (f == 0)
+        printf("no record found\n\n");
 }
